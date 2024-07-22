@@ -29,7 +29,7 @@
             align-items: center;
         }
         .pokedex {
-            background-color: var(--bg-color);
+            background: var(--bg-color);
             border-radius: 25px;
             box-shadow: 10px 10px 30px var(--shadow-dark), 
                         -10px -10px 30px var(--shadow-light);
@@ -217,6 +217,7 @@
             }
             document.documentElement.style.setProperty('--pokemon-color', gradientColor);
             document.documentElement.style.setProperty('--bg-color', gradientColor);
+            document.documentElement.style.setProperty('--screen-color', gradientColor);
             const luminance = calculateLuminance(type1Color);  // Using the first color for luminance calculation
             const textColor = luminance > 0.5 ? "#333333" : "#FFFFFF";
             document.documentElement.style.setProperty('--text-color', textColor);
