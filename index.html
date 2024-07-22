@@ -210,14 +210,15 @@
             dark: "#705848", steel: "#B8B8D0", fairy: "#EE99AC"
         };
 
-        function setThemeColor(color) {
-            document.documentElement.style.setProperty('--pokemon-color', color);
-            document.documentElement.style.setProperty('--bg-color', color);
-            const luminance = calculateLuminance(color);
+        function setThemeColor(color1, color2) {
+            const gradientColor = color2 ? `linear-gradient(${color1}, ${color2})` : color1;
+            document.documentElement.style.setProperty('--pokemon-color', gradientColor);
+            document.documentElement.style.setProperty('--bg-color', gradientColor);
+            const luminance = calculateLuminance(color1);
             const textColor = luminance > 0.5 ? "#333333" : "#FFFFFF";
             document.documentElement.style.setProperty('--text-color', textColor);
-            document.documentElement.style.setProperty('--shadow-light', luminance > 0.5 ? lightenColor(color, 20) : lightenColor(color, 10));
-            document.documentElement.style.setProperty('--shadow-dark', luminance > 0.5 ? darkenColor(color, 10) : darkenColor(color, 20));
+            document.documentElement.style.setProperty('--shadow-light', luminance > 0.5 ? lightenColor(color1, 20) : lightenColor(color1, 10));
+            document.documentElement.style.setProperty('--shadow-dark', luminance > 0.5 ? darkenColor(color1, 10) : darkenColor(color1, 20));
         }
 
         function calculateLuminance(hex) {
@@ -266,8 +267,10 @@
                 currentPokemonId = data.id;
 
                 const mainType = data.types[0].type.name;
-                const typeColor = typeColors[mainType] || '#A8A878';  // Default to normal type color if not found
-                setThemeColor(typeColor);
+                const secondaryType = data.types[1] ? data.types[1].type.name : null;
+                const typeColor = typeColors[mainType];
+                const typeColor2 = secondaryType ? typeColors[secondaryType] : null;
+                setThemeColor(typeColor, typeColor2);
 
                 const typeBadges = data.types.map(type => 
                     `<span class="type-badge" style="background-color: ${typeColors[type.type.name]}">
