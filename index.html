@@ -220,17 +220,19 @@
             const textColor = luminance1 > 0.5 ? "#333333" : "#FFFFFF";
             document.documentElement.style.setProperty('--text-color', textColor);
 
-            document.documentElement.style.setProperty('--shadow-light', luminance1 > 0.5 ? lightenColor(type1Color, 20) : lightenColor(type1Color, 10));
-            document.documentElement.style.setProperty('--shadow-dark', luminance1 > 0.5 ? darkenColor(type1Color, 10) : darkenColor(type1Color, 20));
+            const shadowLight1 = lightenColor(type1Color, 20);
+            const shadowDark1 = darkenColor(type1Color, 20);
 
-            if (type2Color) {
-                document.documentElement.style.setProperty('--shadow-light-bottom', luminance2 > 0.5 ? lightenColor(type2Color, 20) : lightenColor(type2Color, 10));
-                document.documentElement.style.setProperty('--shadow-dark-bottom', luminance2 > 0.5 ? darkenColor(type2Color, 10) : darkenColor(type2Color, 20));
-                updateShadows(gradientColor);
-            } else {
-                document.documentElement.style.setProperty('--shadow-light-bottom', document.documentElement.style.getPropertyValue('--shadow-light'));
-                document.documentElement.style.setProperty('--shadow-dark-bottom', document.documentElement.style.getPropertyValue('--shadow-dark'));
-            }
+            const shadowLight2 = type2Color ? lightenColor(type2Color, 20) : shadowLight1;
+            const shadowDark2 = type2Color ? darkenColor(type2Color, 20) : shadowDark1;
+
+            document.documentElement.style.setProperty('--shadow-light', shadowLight1);
+            document.documentElement.style.setProperty('--shadow-dark', shadowDark1);
+
+            document.documentElement.style.setProperty('--shadow-light-bottom', shadowLight2);
+            document.documentElement.style.setProperty('--shadow-dark-bottom', shadowDark2);
+
+            updateShadows(gradientColor);
         }
 
         function updateShadows(gradientColor) {
@@ -238,9 +240,7 @@
             shadowElements.forEach(element => {
                 element.style.boxShadow = `
                     var(--shadow-dark) 10px 10px 30px, 
-                    var(--shadow-light) -10px -10px 30px,
-                    var(--shadow-dark-bottom) 10px 30px 30px, 
-                    var(--shadow-light-bottom) -10px -30px 30px
+                    var(--shadow-light) -10px -10px 30px
                 `;
             });
         }
