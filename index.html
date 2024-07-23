@@ -218,11 +218,23 @@
             document.documentElement.style.setProperty('--pokemon-color', gradientColor);
             document.documentElement.style.setProperty('--bg-color', gradientColor);
             document.documentElement.style.setProperty('--screen-color', gradientColor);
-            const luminance = calculateLuminance(type1Color);  // Using the first color for luminance calculation
-            const textColor = luminance > 0.5 ? "#333333" : "#FFFFFF";
+
+            const luminance1 = calculateLuminance(type1Color);  // Using the first color for luminance calculation
+            const luminance2 = type2Color ? calculateLuminance(type2Color) : luminance1;  // Using the second color for luminance calculation if available
+
+            const textColor = luminance1 > 0.5 ? "#333333" : "#FFFFFF";
             document.documentElement.style.setProperty('--text-color', textColor);
-            document.documentElement.style.setProperty('--shadow-light', luminance > 0.5 ? lightenColor(type1Color, 20) : lightenColor(type1Color, 10));
-            document.documentElement.style.setProperty('--shadow-dark', luminance > 0.5 ? darkenColor(type1Color, 10) : darkenColor(type1Color, 20));
+
+            document.documentElement.style.setProperty('--shadow-light', luminance1 > 0.5 ? lightenColor(type1Color, 20) : lightenColor(type1Color, 10));
+            document.documentElement.style.setProperty('--shadow-dark', luminance1 > 0.5 ? darkenColor(type1Color, 10) : darkenColor(type1Color, 20));
+
+            if (type2Color) {
+                document.documentElement.style.setProperty('--shadow-light-bottom', luminance2 > 0.5 ? lightenColor(type2Color, 20) : lightenColor(type2Color, 10));
+                document.documentElement.style.setProperty('--shadow-dark-bottom', luminance2 > 0.5 ? darkenColor(type2Color, 10) : darkenColor(type2Color, 20));
+            } else {
+                document.documentElement.style.setProperty('--shadow-light-bottom', document.documentElement.style.getPropertyValue('--shadow-light'));
+                document.documentElement.style.setProperty('--shadow-dark-bottom', document.documentElement.style.getPropertyValue('--shadow-dark'));
+            }
         }
 
         function calculateLuminance(hex) {
