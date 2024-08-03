@@ -50,7 +50,7 @@
       width: 100%;
       max-width: 1400px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 10px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -59,30 +59,35 @@
 
     header {
       background-color: var(--surface);
-      padding: 20px;
+      padding: 15px;
       border-radius: 15px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 15px;
     }
 
     h1 {
       margin: 0;
       color: var(--primary);
-      font-size: 2em;
+      font-size: 1.8em;
+      text-align: center;
     }
 
     .search-container {
       display: flex;
       align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     input[type="text"] {
       padding: 10px 15px;
       border: none;
       border-radius: 25px;
-      width: 250px;
+      width: 100%;
+      max-width: 250px;
       background-color: var(--surface-light);
       color: var(--on-surface);
       font-size: 1em;
@@ -96,7 +101,6 @@
       color: var(--on-surface);
       cursor: pointer;
       font-size: 1em;
-      margin-left: 10px;
       transition: background-color 0.3s;
     }
 
@@ -109,7 +113,8 @@
 
     #pokedexSlider {
       -webkit-appearance: none;
-      width: 200px;
+      width: 100%;
+      max-width: 200px;
       height: 8px;
       border-radius: 5px;
       background: linear-gradient(to right, var(--primary), var(--secondary));
@@ -130,18 +135,18 @@
 
     .main-container {
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 15px;
       flex: 1;
       overflow: hidden;
     }
 
     .recent-pokemon-list {
-      width: 80px;
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
-      padding-right: 20px;
-      align-items: flex-start;
+      padding: 10px;
     }
 
     .recent-pokemon-list img {
@@ -160,79 +165,45 @@
     .pokemon-content {
       flex: 1;
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 15px;
       overflow-y: auto;
-      padding-right: 20px;
+      padding: 10px;
     }
 
-    .pokemon-content::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    .pokemon-content::-webkit-scrollbar-track {
-      background: var(--surface-light);
-      border-radius: 5px;
-    }
-
-    .pokemon-content::-webkit-scrollbar-thumb {
-      background: var(--primary);
-      border-radius: 5px;
-    }
-
-    .pokemon-content::-webkit-scrollbar-thumb:hover {
-      background: var(--secondary);
-    }
-
-    .main-info {
-      flex: 1;
+    .main-info, .additional-info {
       background-color: var(--surface);
       border-radius: 15px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .additional-info {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .card {
-      background-color: var(--surface);
-      border-radius: 15px;
-      padding: 20px;
-      font-size: 1em;
+      padding: 15px;
     }
 
     .pokemon-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .pokemon-name {
-      font-size: 2em;
+      font-size: 1.8em;
       margin: 0;
     }
 
     .pokemon-id {
-      font-size: 1.5em;
+      font-size: 1.3em;
       color: var(--secondary);
     }
 
     .pokemon-images {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin-bottom: 20px;
+      gap: 15px;
+      margin-bottom: 15px;
     }
 
     .pokemon-images img {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
     }
 
     .type {
@@ -240,31 +211,27 @@
       padding: 5px 12px;
       border-radius: 20px;
       color: var(--on-surface);
-      font-size: 1em;
+      font-size: 0.9em;
       margin-right: 10px;
+      margin-bottom: 5px;
     }
 
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 20px;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 15px;
     }
 
     .info-item {
       background-color: var(--surface-light);
       padding: 10px;
       border-radius: 10px;
-      font-size: 1em;
-    }
-
-    .info-label {
-      font-weight: bold;
-      color: var(--secondary);
+      font-size: 0.9em;
     }
 
     .abilities-container {
-      margin-top: 20px;
+      margin-top: 15px;
     }
 
     .ability-item {
@@ -296,23 +263,25 @@
 
     .evolution-chain {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-around;
       align-items: center;
+      gap: 10px;
     }
 
     .evolution-stage {
       text-align: center;
-      font-size: 1em;
+      font-size: 0.9em;
     }
 
     .evolution-stage img {
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
     }
 
     .stats-container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 10px;
     }
 
@@ -329,13 +298,6 @@
       transition: width 0.5s ease-out;
     }
 
-    .stat-fill.hp { background-color: #FF0000; }
-    .stat-fill.attack { background-color: #F08030; }
-    .stat-fill.defense { background-color: #F8D030; }
-    .stat-fill.special-attack { background-color: #6890F0; }
-    .stat-fill.special-defense { background-color: #78C850; }
-    .stat-fill.speed { background-color: #F85888; }
-
     .stat-value {
       position: absolute;
       right: 5px;
@@ -347,7 +309,8 @@
 
     .matchups-container {
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .matchup-group {
@@ -360,7 +323,7 @@
       height: 40px;
       border-radius: 8px;
       margin: 4px;
-      font-size: 1em;
+      font-size: 0.9em;
       text-align: center;
       line-height: 40px;
       color: var(--on-surface);
@@ -368,48 +331,52 @@
       cursor: pointer;
     }
 
-    .type-box::after {
-      content: attr(title);
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--surface);
-      color: var(--on-surface);
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.8em;
-      white-space: nowrap;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
-      pointer-events: none;
-      z-index: 1;
-    }
+    @media (min-width: 768px) {
+      header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-    .type-box:hover::after {
-      opacity: 1;
-      visibility: visible;
-    }
+      h1 {
+        font-size: 2em;
+        text-align: left;
+      }
 
-    .normal { background-color: var(--normal); }
-    .fighting { background-color: var(--fighting); }
-    .flying { background-color: var(--flying); }
-    .poison { background-color: var(--poison); }
-    .ground { background-color: var(--ground); }
-    .rock { background-color: var(--rock); }
-    .bug { background-color: var(--bug); }
-    .ghost { background-color: var(--ghost); }
-    .steel { background-color: var(--steel); }
-    .fire { background-color: var(--fire); }
-    .water { background-color: var(--water); }
-    .grass { background-color: var(--grass); }
-    .electric { background-color: var(--electric); }
-    .psychic { background-color: var(--psychic); }
-    .ice { background-color: var(--ice); }
-    .dragon { background-color: var(--dragon); }
-    .dark { background-color: var(--dark); }
-    .fairy { background-color: var(--fairy); }
+      .main-container {
+        flex-direction: row;
+      }
+
+      .recent-pokemon-list {
+        width: 80px;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .pokemon-content {
+        flex-direction: row;
+      }
+
+      .main-info {
+        flex: 1;
+      }
+
+      .additional-info {
+        flex: 2;
+      }
+
+      .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .matchups-container {
+        flex-direction: row;
+      }
+    }
   </style>
 </head>
 <body>
