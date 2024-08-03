@@ -124,7 +124,34 @@
       cursor: pointer;
     }
 
+    .main-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .recent-pokemon-list {
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 20px;
+    }
+
+    .recent-pokemon-list img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s;
+      background-color: var(--surface-light);
+    }
+
+    .recent-pokemon-list img:hover {
+      transform: scale(1.1);
+    }
+
     .pokemon-content {
+      flex: 1;
       display: flex;
       gap: 20px;
       height: calc(100vh - 200px);
@@ -233,20 +260,6 @@
       padding: 20px;
     }
 
-    .recent-pokemon-list {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .recent-pokemon-list img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
     #loadingSpinner {
       width: 50px;
       height: 50px;
@@ -322,6 +335,52 @@
     .dragon { background-color: var(--dragon); }
     .dark { background-color: var(--dark); }
     .fairy { background-color: var(--fairy); }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-bar {
+      background-color: var(--surface-light);
+      border-radius: 5px;
+      height: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      height: 100%;
+      background-color: var(--primary);
+      transition: width 0.5s ease-out;
+    }
+
+    .stat-value {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--on-surface);
+      font-size: 0.8em;
+    }
+
+    .abilities-container {
+      margin-top: 20px;
+    }
+
+    .ability-item {
+      background-color: var(--surface-light);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .ability-name {
+      font-weight: bold;
+      color: var(--secondary);
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -339,14 +398,14 @@
         <button onclick="nextPokemon()">➡️</button>
       </div>
     </header>
-    <div id="pokemonData" class="pokemon-content">
-      <!-- Pokémon data will be displayed here -->
-    </div>
-    <footer>
+    <div class="main-container">
       <div id="recentPokemon" class="recent-pokemon-list">
-        <!-- Recent Pokémon list -->
+        <!-- Recent Pokémon list will be here -->
       </div>
-    </footer>
+      <div id="pokemonData" class="pokemon-content">
+        <!-- Pokémon data will be displayed here -->
+      </div>
+    </div>
   </div>
   <div id="loadingSpinner"></div>
   <script>
@@ -463,9 +522,9 @@
       const description = await getPokemonDescription(data.id);
       const speciesData = await fetch(`${apiUrl}pokemon-species/${data.id}`).then(res => res.json());
       const evolutionChain = await getEvolutionChain(speciesData.evolution_chain.url);
+      const abilities = await Promise.all(data.abilities.map(ability => getAbilityDescription(ability.ability.url)));
       const pokemonData = document.getElementById('pokemonData');
       const types = data.types.map(type => `<span class="type ${type.type.name}">${type.type.name}</span>`).join(' ');
-      const abilities = data.abilities.map(ability => ability.ability.name).join(', ');
 
       const nameStyles = data.types.length > 1 ? 
         `background: linear-gradient(to right, var(--${data.types[0].type.name}), var(--${data.types[1].type.name})); -webkit-background-clip: text; -webkit-text-fill-color: transparent;` : 
@@ -484,20 +543,40 @@
           <div>${types}</div>
           <div class="info-grid">
             <div class="info-item">
-              <span class="info-label">Height:</span> ${data.height}
+              <span class="info-label">Height:</span> ${data.height / 10} m
             </div>
             <div class="info-item">
-              <span class="info-label">Weight:</span> ${data.weight}
-            </div>
-            <div class="info-item" style="grid-column: 1 / -1;">
-              <span class="info-label">Abilities:</span> ${abilities}
+              <span class="info-label">Weight:</span> ${data.weight / 10} kg
             </div>
           </div>
           <div class="info-item" style="margin-top: 10px;">
             <span class="info-label">Description:</span> ${description}
           </div>
+          <div class="abilities-container">
+            <h3>Abilities</h3>
+            ${abilities.map(ability => `
+              <div class="ability-item">
+                <div class="ability-name">${ability.name}</div>
+                <div>${ability.description}</div>
+              </div>
+            `).join('')}
+          </div>
         </div>
         <div class="additional-info">
+          <div class="card">
+            <h3>Base Stats</h3>
+            <div class="stats-container">
+              ${data.stats.map(stat => `
+                <div>
+                  <div>${stat.stat.name}: ${stat.base_stat}</div>
+                  <div class="stat-bar">
+                    <div class="stat-fill" style="width: ${(stat.base_stat / 255) * 100}%"></div>
+                    <span class="stat-value">${stat.base_stat}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
           <div class="card">
             <h3>Type Matchups</h3>
             <div class="matchups-container">
@@ -522,6 +601,24 @@
       document.getElementById('pokedexSlider').value = currentPokemonId;
       getTypeMatchups(data.types.map(type => type.type.url));
       displayEvolutionChain(evolutionChain);
+    }
+
+    async function getAbilityDescription(abilityUrl) {
+      try {
+        const response = await fetch(abilityUrl);
+        const data = await response.json();
+        const englishEntry = data.effect_entries.find(entry => entry.language.name === 'en');
+        return {
+          name: data.name,
+          description: englishEntry ? englishEntry.effect : 'No description available.'
+        };
+      } catch (error) {
+        console.error('Error fetching ability description:', error);
+        return {
+          name: 'Unknown',
+          description: 'No description available.'
+        };
+      }
     }
 
     async function displayEvolutionChain(evolutionChain) {
@@ -599,7 +696,12 @@
 
     function updateRecentList() {
       const recentList = document.getElementById('recentPokemon');
-      recentList.innerHTML = recentPokemon.map(pokemon => `<img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" onclick="searchPokemon('${pokemon.name}')">`).join('');
+      recentList.innerHTML = recentPokemon.map(pokemon => `
+        <img src="${pokemon.sprites.front_default}" 
+             alt="${pokemon.name}" 
+             title="${pokemon.name}"
+             onclick="searchPokemon('${pokemon.name}')">`
+      ).join('');
     }
 
     async function autofillPokemon() {
