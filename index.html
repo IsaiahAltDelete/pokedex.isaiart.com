@@ -298,6 +298,13 @@
       transition: width 0.5s ease-out;
     }
 
+    .stat-fill.hp { background-color: #FF0000; }
+    .stat-fill.attack { background-color: #F08030; }
+    .stat-fill.defense { background-color: #F8D030; }
+    .stat-fill.special-attack { background-color: #6890F0; }
+    .stat-fill.special-defense { background-color: #78C850; }
+    .stat-fill.speed { background-color: #F85888; }
+
     .stat-value {
       position: absolute;
       right: 5px;
@@ -330,6 +337,49 @@
       position: relative;
       cursor: pointer;
     }
+
+    .type-box::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--surface);
+      color: var(--on-surface);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8em;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .type-box:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .normal { background-color: var(--normal); }
+    .fighting { background-color: var(--fighting); }
+    .flying { background-color: var(--flying); }
+    .poison { background-color: var(--poison); }
+    .ground { background-color: var(--ground); }
+    .rock { background-color: var(--rock); }
+    .bug { background-color: var(--bug); }
+    .ghost { background-color: var(--ghost); }
+    .steel { background-color: var(--steel); }
+    .fire { background-color: var(--fire); }
+    .water { background-color: var(--water); }
+    .grass { background-color: var(--grass); }
+    .electric { background-color: var(--electric); }
+    .psychic { background-color: var(--psychic); }
+    .ice { background-color: var(--ice); }
+    .dragon { background-color: var(--dragon); }
+    .dark { background-color: var(--dark); }
+    .fairy { background-color: var(--fairy); }
 
     @media (min-width: 768px) {
       header {
@@ -595,7 +645,7 @@
 
       currentPokemonId = data.id;
       document.getElementById('pokedexSlider').value = currentPokemonId;
-      getTypeMatchups(data.types.map(type => type.type.url));
+      getTypeMatchups(data.types.map(type => type.type.name));
       displayEvolutionChain(evolutionChain);
     }
 
@@ -637,49 +687,64 @@
       }
     }
 
-    async function getTypeMatchups(typeUrls) {
+    async function getTypeMatchups(typeNames) {
+      const typeData = await Promise.all(typeNames.map(type => fetch(`${apiUrl}type/${type}`).then(response => response.json())));
       const weaknesses = {};
       const resistances = {};
 
-      for (const url of typeUrls) {
-        const response = await fetch(url);
-        const data = await response.json();
-
+      typeData.forEach(data => {
         data.damage_relations.double_damage_from.forEach(type => {
-          if (weaknesses[type.name]) {
-            weaknesses[type.name] *= 2;
-          } else {
-            weaknesses[type.name] = 2;
-          }
+          weaknesses[type.name] = (weaknesses[type.name] || 1) * 2;
         });
 
         data.damage_relations.half_damage_from.forEach(type => {
-          if (resistances[type.name]) {
-            resistances[type.name] *= 0.5;
-          } else {
-            resistances[type.name] = 0.5;
-          }
+          resistances[type.name] = (resistances[type.name] || 1) * 0.5;
         });
 
         data.damage_relations.no_damage_from.forEach(type => {
           resistances[type.name] = 0;
         });
+      });
+
+      // Combine weaknesses and resistances
+      const matchups = {};
+      for (const type in weaknesses) {
+        matchups[type] = weaknesses[type];
+      }
+      for (const type in resistances) {
+        if (matchups[type]) {
+          matchups[type] *= resistances[type];
+        } else {
+          matchups[type] = resistances[type];
+        }
       }
 
-      displayMatchups(weaknesses, resistances);
+      // Adjust matchups to 1 if resistance and weakness cancel each other
+      for (const type in matchups) {
+        if (matchups[type] < 1) {
+          matchups[type] = 0.5;
+        } else if (matchups[type] > 1 && matchups[type] < 2) {
+          matchups[type] = 1;
+        }
+      }
+
+      displayMatchups(matchups);
     }
 
-    function displayMatchups(weaknesses, resistances) {
+    function displayMatchups(matchups) {
       const weaknessesContainer = document.getElementById('weaknesses');
       const resistancesContainer = document.getElementById('resistances');
 
-      weaknessesContainer.innerHTML = Object.entries(weaknesses)
-        .map(([type, value]) => `<div class="type-box ${type}" title="${type} x${value}">${value}</div>`)
-        .join('');
+      weaknessesContainer.innerHTML = '';
+      resistancesContainer.innerHTML = '';
 
-      resistancesContainer.innerHTML = Object.entries(resistances)
-        .map(([type, value]) => `<div class="type-box ${type}" title="${type} x${value}">${value}</div>`)
-        .join('');
+      for (const [type, value] of Object.entries(matchups)) {
+        if (value > 1) {
+          weaknessesContainer.innerHTML += `<div class="type-box ${type}" title="${type} x${value}">${value}x</div>`;
+        } else if (value < 1) {
+          resistancesContainer.innerHTML += `<div class="type-box ${type}" title="${type} x${value}">${value}x</div>`;
+        }
+      }
     }
 
     function addToRecent(data) {
