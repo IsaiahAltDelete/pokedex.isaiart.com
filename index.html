@@ -43,6 +43,7 @@
       flex-direction: column;
       min-height: 100vh;
       font-size: 16px;
+      overflow: hidden;
     }
 
     .container {
@@ -51,6 +52,9 @@
       margin: 0 auto;
       padding: 20px;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
 
     header {
@@ -127,6 +131,8 @@
     .main-container {
       display: flex;
       gap: 20px;
+      flex: 1;
+      overflow: hidden;
     }
 
     .recent-pokemon-list {
@@ -135,6 +141,7 @@
       flex-direction: column;
       gap: 10px;
       padding-right: 20px;
+      align-items: flex-start;
     }
 
     .recent-pokemon-list img {
@@ -154,8 +161,26 @@
       flex: 1;
       display: flex;
       gap: 20px;
-      height: calc(100vh - 200px);
-      overflow: auto;
+      overflow-y: auto;
+      padding-right: 20px;
+    }
+
+    .pokemon-content::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .pokemon-content::-webkit-scrollbar-track {
+      background: var(--surface-light);
+      border-radius: 5px;
+    }
+
+    .pokemon-content::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 5px;
+    }
+
+    .pokemon-content::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
     }
 
     .main-info {
@@ -238,6 +263,37 @@
       color: var(--secondary);
     }
 
+    .abilities-container {
+      margin-top: 20px;
+    }
+
+    .ability-item {
+      background-color: var(--surface-light);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .ability-name {
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    .ability-description {
+      max-height: 0;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .ability-item:hover .ability-description {
+      max-height: 200px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+
     .evolution-chain {
       display: flex;
       justify-content: space-around;
@@ -254,20 +310,48 @@
       height: 80px;
     }
 
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 20px;
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
 
-    #loadingSpinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid var(--surface-light);
-      border-top: 5px solid var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
+    .stat-bar {
+      background-color: var(--surface-light);
+      border-radius: 5px;
+      height: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      height: 100%;
+      transition: width 0.5s ease-out;
+    }
+
+    .stat-fill.hp { background-color: #FF0000; }
+    .stat-fill.attack { background-color: #F08030; }
+    .stat-fill.defense { background-color: #F8D030; }
+    .stat-fill.special-attack { background-color: #6890F0; }
+    .stat-fill.special-defense { background-color: #78C850; }
+    .stat-fill.speed { background-color: #F85888; }
+
+    .stat-value {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--on-surface);
+      font-size: 0.8em;
+    }
+
+    .matchups-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .matchup-group {
+      flex: 1;
     }
 
     .type-box {
@@ -308,15 +392,6 @@
       visibility: visible;
     }
 
-    .matchups-container {
-      display: flex;
-      gap: 20px;
-    }
-
-    .matchup-group {
-      flex: 1;
-    }
-
     .normal { background-color: var(--normal); }
     .fighting { background-color: var(--fighting); }
     .flying { background-color: var(--flying); }
@@ -335,52 +410,6 @@
     .dragon { background-color: var(--dragon); }
     .dark { background-color: var(--dark); }
     .fairy { background-color: var(--fairy); }
-
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .stat-bar {
-      background-color: var(--surface-light);
-      border-radius: 5px;
-      height: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-fill {
-      height: 100%;
-      background-color: var(--primary);
-      transition: width 0.5s ease-out;
-    }
-
-    .stat-value {
-      position: absolute;
-      right: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--on-surface);
-      font-size: 0.8em;
-    }
-
-    .abilities-container {
-      margin-top: 20px;
-    }
-
-    .ability-item {
-      background-color: var(--surface-light);
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .ability-name {
-      font-weight: bold;
-      color: var(--secondary);
-      margin-bottom: 5px;
-    }
   </style>
 </head>
 <body>
@@ -557,7 +586,7 @@
             ${abilities.map(ability => `
               <div class="ability-item">
                 <div class="ability-name">${ability.name}</div>
-                <div>${ability.description}</div>
+                <div class="ability-description">${ability.description}</div>
               </div>
             `).join('')}
           </div>
@@ -570,7 +599,7 @@
                 <div>
                   <div>${stat.stat.name}: ${stat.base_stat}</div>
                   <div class="stat-bar">
-                    <div class="stat-fill" style="width: ${(stat.base_stat / 255) * 100}%"></div>
+                    <div class="stat-fill ${stat.stat.name}" style="width: ${(stat.base_stat / 255) * 100}%"></div>
                     <span class="stat-value">${stat.base_stat}</span>
                   </div>
                 </div>
@@ -721,6 +750,9 @@
     function hideLoadingSpinner() {
       document.getElementById('loadingSpinner').style.display = 'none';
     }
+
+    // Initial load
+    searchRandomPokemon();
   </script>
 </body>
 </html>
