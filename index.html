@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pokédex</title>
+  <title>Pokémon Explorer</title>
   <style>
     :root {
       --background: #121212;
@@ -230,7 +230,7 @@
       text-transform: capitalize;
       background-clip: text;
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      padding: 0.2rem 0;
     }
 
     .pokemon-id {
@@ -471,7 +471,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>Pokédex</h1>
+      <h1>Pokémon Explorer</h1>
       <div class="search-controls">
         <div class="search-container">
           <input type="text" id="pokemonSearch" placeholder="Search Pokémon" oninput="autofillPokemon()" onkeydown="if(event.key === 'Enter') searchPokemon()">
@@ -480,7 +480,7 @@
         </div>
         <div class="slider-container">
           <button onclick="previousPokemon()">⬅️</button>
-          <input type="range" id="pokedexSlider" min="1" max="1025" value="1" onchange="sliderChange()">
+          <input type="range" id="pokedexSlider" min="1" max="1010" value="1" onchange="sliderChange()">
           <button onclick="nextPokemon()">➡️</button>
         </div>
       </div>
@@ -514,8 +514,8 @@
         addToRecent(data);
         document.getElementById('pokemonSearch').value = '';
       } catch (error) {
-        console.error('Error fetching Pokémon data:', error);
-alert('Pokémon not found. Please try again.');
+console.error('Error fetching Pokémon data:', error);
+        alert('Pokémon not found. Please try again.');
       } finally {
         hideLoadingSpinner();
       }
@@ -616,14 +616,17 @@ alert('Pokémon not found. Please try again.');
       const pokemonData = document.getElementById('pokemonData');
       const types = data.types.map(type => `<span class="type ${type.type.name}" style="background-color: var(--${type.type.name});">${type.type.name}</span>`).join('');
 
-      const nameGradient = data.types.length > 1 
-        ? `linear-gradient(to right, var(--${data.types[0].type.name}), var(--${data.types[1].type.name}))`
-        : `var(--${data.types[0].type.name})`;
+      let nameStyle;
+      if (data.types.length > 1) {
+        nameStyle = `background-image: linear-gradient(to right, var(--${data.types[0].type.name}), var(--${data.types[1].type.name})); -webkit-text-fill-color: transparent;`;
+      } else {
+        nameStyle = `color: var(--${data.types[0].type.name}); -webkit-text-fill-color: var(--${data.types[0].type.name});`;
+      }
 
       pokemonData.innerHTML = `
         <div class="card main-info">
           <div class="pokemon-header">
-            <h2 class="pokemon-name" style="background-image: ${nameGradient};">${data.name}</h2>
+            <h2 class="pokemon-name" style="${nameStyle}">${data.name}</h2>
             <span class="pokemon-id">#${data.id}</span>
           </div>
           <div class="pokemon-images">
